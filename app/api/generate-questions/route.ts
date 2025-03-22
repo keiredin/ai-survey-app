@@ -30,26 +30,22 @@ export async function POST(req: NextRequest) {
       ],
     });
 
-    // console.log(completion.choices[0].message.content);
-
-    // const questions =
-    //   completion.choices[0].message.content
-    //     ?.split("\n")
-    //     .filter((q: string) => q.trim())
-    //     .slice(0, 5) || [];
-
     const content = completion.choices[0].message.content;
     console.log("Raw content:", content);
 
-    // Split into lines and filter for numbered questions (e.g., "1.", "2.", etc.)
-    const lines =
-      content?.split("\n").filter((line: string) => line.trim()) || [];
+    // Split into lines and filter non-empty ones
+    const lines = content?.split("\n").filter((line) => line.trim()) || [];
+
+    // Parse questions: match lines starting with "1. " (with or without bolding)
     const questions = lines
-      .filter((line: string) => /^\d+\.\s*\*\*/.test(line)) // Match lines starting with "1. **", "2. **", etc.
-      .map((line: string) =>
-        line.replace(/^\d+\.\s*\*\*(.+?)\*\*.*/, "$1").trim()
-      ) // Extract text between **...**
-      .map((question: string, index: number) => `${index + 1}. ${question}`) // Re-add numbering
+      .filter((line) => /^\d+\.\s/.test(line)) // Match "1. " or "1. **"
+      .map((line) => {
+        // Extract question text, removing numbering and optional bolding
+        return line
+          .replace(/^\d+\.\s*\**/, "") // Remove "1. " or "1. **"
+          .replace(/\**$/, "") // Remove trailing "**" if present
+          .trim();
+      })
       .slice(0, 5);
 
     console.log("Parsed questions:", questions);

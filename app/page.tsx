@@ -37,7 +37,7 @@ export default function Home() {
       setTitle(surveyTitle);
       setQuestions(questions);
       setSurveyId(surveyId);
-      // setSubmitted(false);
+      
       toast("Questions generated successfully!", {
         dismissible: true,
       });
