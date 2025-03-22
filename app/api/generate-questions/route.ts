@@ -8,10 +8,6 @@ import { auth } from "@/auth";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-// const openai = new OpenAI({
-//   apiKey: process.env.OPENAI_API_KEY,
-// });
-
 export async function POST(req: NextRequest) {
   try {
     const session = await auth();
@@ -29,7 +25,7 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "user",
-          content: `Generate five engaging questions for a survey based on the topic: ${title}`,
+          content: `Generate five engaging, open-ended questions for a survey based on the topic: ${title}.`,
         },
       ],
     });
