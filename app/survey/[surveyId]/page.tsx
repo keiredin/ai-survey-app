@@ -1,14 +1,13 @@
-
 import { prisma } from "@/db/prisma";
 import { Button } from "@/components/ui/button";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
-type SurveyPageProps = {
-  params: { surveyId: string };
-};
 
-export default async function SurveyDetailPage({ params }: SurveyPageProps) {
+export default async function SurveyDetailPage(props: {
+  params: Promise<{ surveyId: string }>;
+}) {
+  const params = await props.params;
   const { surveyId } = params;
 
   const survey = await prisma.survey.findUnique({

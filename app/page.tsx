@@ -22,7 +22,6 @@ export default function Home() {
   const [title, setTitle] = useState<string>("");
   const [questions, setQuestions] = useState<string[]>([]);
   const [surveyId, setSurveyId] = useState<string>("");
-  const [submitted, setSubmitted] = useState(false);
   const { register, handleSubmit, reset } = useForm<FormData>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -38,7 +37,7 @@ export default function Home() {
       setTitle(surveyTitle);
       setQuestions(questions);
       setSurveyId(surveyId);
-      setSubmitted(false);
+      // setSubmitted(false);
       toast("Questions generated successfully!", {
         dismissible: true,
       });
@@ -75,7 +74,7 @@ export default function Home() {
           answers: data.answers,
         }),
       });
-      setSubmitted(true);
+      // setSubmitted(true);
       reset();
       setQuestions([]);
       setTitle("");

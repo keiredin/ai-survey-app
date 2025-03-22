@@ -47,7 +47,8 @@ const SurveysPage = () => {
 
         setSurveys(data.surveys);
       } catch (err) {
-        setError(err.message || "An error occurred while fetching surveys");
+        console.log(err);
+        setError( "An error occurred while fetching surveys");
       } finally {
         setLoading(false);
       }
