@@ -5,12 +5,55 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name          String     @default("NO_NAME")
+  email         String     @unique(map: "user_email_idx")
+  password      String?
+  emailVerified DateTime?  @db.Timestamp(6)
+  image         String?
+  createdAt     DateTime   @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime   @updatedAt
+  surveys       Survey[] // Link to surveys created by the user
+  responses     Response[]
+  account      Account[]
+  session   Session[]
+}
+
+model Account {
+  userId            String   @db.Uuid
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "account_userId_user_id_fk")
+
+  @@id([provider, providerAccountId], map: "account_provider_providerAccountId_pk")
+}
+
+model Session {
+  sessionToken String   @id
+  userId       String   @db.Uuid
+  expires      DateTime @db.Timestamp(6)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "session_userId_user_id_fk")
 }
 
 model Survey {
@@ -19,6 +62,8 @@ model Survey {
   questions String[]
   responses Response[]
   createdAt DateTime   @default(now())
+  userId    String?    @db.Uuid
+  user      User?      @relation(fields: [userId], references: [id])
 }
 
 model Response {
@@ -27,4 +72,6 @@ model Response {
   answers   String[]
   createdAt DateTime @default(now())
   Survey    Survey   @relation(fields: [surveyId], references: [id])
+  userId    String?  @db.Uuid
+  user      User?    @relation(fields: [userId], references: [id])
 }

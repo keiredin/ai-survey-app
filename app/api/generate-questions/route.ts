@@ -1,18 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+
 // import OpenAI from 'openai';
 
 import Groq from "groq-sdk";
+import { prisma } from "@/db/prisma";
+import { auth } from "@/auth";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-const prisma = new PrismaClient();
 // const openai = new OpenAI({
 //   apiKey: process.env.OPENAI_API_KEY,
 // });
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await auth();
     const { title } = await req.json();
 
     if (!title) {
@@ -64,6 +66,7 @@ export async function POST(req: NextRequest) {
       data: {
         title,
         questions,
+        userId: session?.user?.id || null,
       },
     });
 
